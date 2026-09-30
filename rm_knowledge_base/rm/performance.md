@@ -3,7 +3,7 @@
 | What | Before | After | How |
 |---|---|---|---|
 | Ledger read at load (8,956 materials) | about 60 s (hung region2) | 29 ms | plain lines through the string site data calls instead of double-encoded JSON (rm/save-system.md) |
-| Ledger rewrite at each options screen opening (region4) | about 1 s, 7.2 MB, every time | kept in about 1/17 of the time when nothing moved (mock) | exact layout comparison, `if_changed` |
+| Ledger rewrite at each options screen opening (region4) | a full write every time: 594 ms, 7.2 MB (measured 2026-09-30) | kept in 31 to 47 ms when nothing has moved (five openings and a save & continue's snapshot, measured 2026-09-30) | exact layout comparison, `if_changed` |
 | Back-out of save & quit (region4) | 2 s unload + 12 s reload | nothing | no early unload |
 | Grind watcher per call (all metals on, 81 bases) | 2.46 ms | 0.04 ms | base selection read as raw text and rebuilt only when the text changes; ghost reaction slots remembered and verified on use |
 | Making Fuel menu shaper at the forge (100,138 reactions) | 54.8 ms per call, 85% of CPU | 0.14 ms per frame (mock, 20,000 buttons) | stamp the list (length, first button, folder token) and cache the verdict until the list is rebuilt |
