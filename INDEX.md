@@ -6,7 +6,7 @@ What Refinish Metal's development has established about Dwarf Fortress, DFHack a
 
 Every entry states one claim, then:
 
-- **Status:** `measured` (a probe, a log or a live test showed it), `code` (read from the source: DF structures, DFHack, RM), `decided` (Jay's design decision, with its reason), or `inference` (reasoned, not yet measured: say what would confirm it).
+- **Status:** `measured` (a probe, a log or a live test showed it), `code` (read from the source: DF structures, DFHack, RM), `decided` (a design decision, with its reason), or `inference` (reasoned, not yet measured: say what would confirm it).
 - **Evidence:** the log lines, probe runs, file and line, or test that shows it.
 - **Date** it was established, and what in RM depends on it.
 
