@@ -2,9 +2,9 @@
 
 ## Modules hand RM a start and a stop; RM runs them
 
-- **Status:** decided (Jay, 2026-09-30) and measured in play
+- **Status:** decided (2026-09-30) and measured in play
 - A module's listener may return `start` and `stop` with its data. RM's engine runs `start` at the end of `run_module_pipeline`, in injection order, only for accepted modules; it runs `stop` first thing in `clear_module_assets`, in reverse order, only for started modules. Every unload path passes through there. Modules without the hooks work as before.
-- **Why:** Making Fuel started its scripts inside its own token call, before RM validated anything, and stopped them only at map unload. A rejected Making Fuel kept every watcher running, which fooled Jay many times into thinking it had loaded, and every watcher polled on through each save with its data out of RAM.
+- **Why:** Making Fuel started its scripts inside its own token call, before RM validated anything, and stopped them only at map unload. A rejected Making Fuel kept every watcher running, which made it look loaded many times over, and every watcher polled on through each save with its data out of RAM.
 - A rejected module carrying a start hook is named once: `Not started: rejected above, so none of its scripts run this session.`
 - Measured in play: `Started 2 module(s)` after each pipeline, `Stopped 2 module(s)` at each clear, nothing of either module logged inside the unloaded windows.
 

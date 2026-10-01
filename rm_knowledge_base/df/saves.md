@@ -28,7 +28,7 @@
 
 ## Save & quit: no field marks the final click, and the map unloads before DF writes
 
-- **Status:** measured (2026-09-29, 2026-09-30); the write order is Jay's from his early save tests, and confirmed by a save & quit taken with RM loaded that loaded cleanly (2026-09-29)
+- **Status:** measured (2026-09-29, 2026-09-30); the write order comes from early save tests in play, and was confirmed by a save & quit taken with RM loaded that loaded cleanly (2026-09-29)
 - The options context becomes `MAIN_DWARF_SAVE_AND_EXIT_CHOICES` when the player opens the save and exit choices; in the measured run nothing else changed until the map unloaded 87 frames later.
 - DF leaves the fort first: `SC_MAP_UNLOADED` fires, and DF writes the save on its saving screen afterwards. DFHack writes its persistent data when that save screen appears.
 
@@ -50,5 +50,33 @@
 
 ## A save written with RM's additions in the raws arrays is corrupt; stale item references are not
 
-- **Status:** measured (Jay's save tests)
+- **Status:** measured (save tests in play)
 - The raws arrays (inorganics, reactions and the like) must hold none of RM's or a module's additions when a save is written. Items that reference injected indices fail gracefully and recover once the indices exist again.
+
+## A cleared save request comes back until it is held down every frame
+
+- **Status:** measured (2026-10-01, refinish-save-cancel-probe, RM shut down, on a copy of the fort)
+- **Clearing once does not hold:** clearing `options.do_manual_save` once, on the frame it rose, failed. The flag came back, the countdown ran out and the save was written (seen in play; the probe's own file check read nothing).
+- **Holding it down every frame does:**
+  - across 3,000 frames the flag was raised again 18 times, each time with `manual_save_timer` still at 5, and was cleared each time;
+  - the timer never moved and the menu stayed open;
+  - no save happened until the hold ended, and the next press then saved at once.
+- **What the player sees:** the save name screen simply does not take the save.
+
+## A save written while RM's scripts were missing carried RM's data
+
+- **Status:** measured (2026-10-01)
+- This bears out the claim above about RM's additions in the raws arrays.
+- With RM's files deleted mid game, a save & quit wrote REFINISH_CORE_AGG_PLASTER into the save, and it would not load.
+- A second test left 29 tool defs in RAM, and that save would not load either (rm/save-system.md).
+
+## DF's write time follows the fort, not RM's loops
+
+- **Status:** measured (2026-09-30, 2026-10-01; region4) and one inference
+- **DF's own write of region4** (the hotsave's Engine figure):
+  - 21 s, then 26.1 s, on 2026-09-30;
+  - 47.7 s the next morning, before any change of that day;
+  - 49 to 50 s through 2026-10-01.
+- **RM's checks are not the cause:** cutting RM's script check from 135 ms to 1 ms every 5 s left the write at 50 s.
+- **Fort size is:** a regular fort (vanilla, RM and its modules) saves quickly (in play, 2026-10-01). What grew is the fort and its mods.
+- **Inference:** during one 80 s save window the script check ran 6 times, not 16, and about 50 s of it was DF writing. That fits DF running no script loops while it writes.
