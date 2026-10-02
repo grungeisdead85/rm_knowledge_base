@@ -45,3 +45,17 @@
   - valuation: 91 µs a call, 4.71 ms/sec (612 s), down to 2 µs on unchanged items (443.7 s);
   - `handle_ghosted`: about 210 µs a job a poll (437 s), down to about 160 (443.7 s);
   - the whole engine: 1.40 ms a poll, down to 1.18.
+
+## The binder watcher marks where a job's output starts
+
+- **Status:** code and measured (2026-10-02)
+- **Before:** every poll, for every job making binder or crystals, the watcher walked every item in the workshop to remember which of the job's tool were already there; at completion, anything not on that list was the output. 0.82 ms a call, one maker job a poll, 7.86 ms/sec.
+- **Now:** each poll reads `df.global.item_next_id` (dfhack/scripts.md); at completion the output is the job's tool in the workshop numbered at or above the last poll's mark. 0.013 to 0.023 ms a call.
+- **The one difference:** an older binder carried into the workshop between the last poll and completion was counted as output by the walk, and is not by the mark. In the mock the walk made 5 stacks of 8 and rewrote the carried binder; the mark made 4 stacks of 10 and left it alone.
+- **Measured in play:** the same yield every session since: 10000 of source at 250 each made 40 bitumen binders, in stacks of 10, 10, 10, 10.
+
+## Air-dry tells the tool wash which tools it changes
+
+- **Status:** code (2026-10-02)
+- Air-dry turns a wet tool into a dry one by rewriting an existing item's subtype. The options screen's kept tool record learns of such a change only from the list air-dry adds the item to (`_G.refinish_tool_wash_touched`; rm/save-system.md).
+- A Making Fuel script that ever changes which owned tool an existing item is must add the item to that list.

@@ -37,6 +37,13 @@
 - **Status:** measured (2026-09-29 region2; 2026-09-30 back-out lock)
 - region2 loaded with the context still on the save and exit choices from the quit that wrote it. A back-out that closed the screen straight from the choices left the context reading them with no screen shown; a typing flag can do the same. Anything reading these fields must check the screen is actually shown, from the live focus (`dfhack.gui.getCurFocus()` starting `dwarfmode/Options`).
 
+## options.open is set exactly while the options screen is up
+
+- **Status:** measured (2026-10-02, a per-frame probe in refinish-save-hook.lua, region4, 368 s)
+- **What was measured:** the options screen opened four times, one of them a save & continue. Every frame, the probe compared `game.main_interface.options.open` with the live focus (`dwarfmode/Options`). Over the 2,145 frames the screen was up, `open` was clear on none of them; over every frame it was down, the frames right after the load included, `open` was set on none.
+- **How it sits with the entry above:** the fields found to outlive the screen were the context and a typing flag. `open` did not, in this probe. One session of evidence, so RM still lets the live focus decide whenever `open` is set.
+- **RM depends on it:** the save hook asks DF for the focus only while `open` is set, with a tripwire that asks anyway every 100 frames and warns once if the screen is ever up with `open` clear (rm/save-system.md).
+
 ## DFHack writes its persistent data before any script sees a save request
 
 - **Status:** code (DFHack Core.cpp, read 2026-09-29) and measured (test2, 2026-09-29)

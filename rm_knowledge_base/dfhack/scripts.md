@@ -6,6 +6,7 @@
 - Loading a save changes DFHack's script paths, so a script can be loaded again as a new copy with new tables. A `_G` handle or a reqscript result held from an earlier load can point at the old copy.
 - Measured: Making Fuel's drain key and tank fuel scripts held `_G.refinish_adaptive_api` from their first load. Every `register_alias` call went into tables the live engine never read, for a whole session: zero adoptions. The same call from the console, reading the global fresh, adopted both bases.
 - **Rule:** read a stateful handle from `_G` at the moment of each call. A global lookup costs nothing; `reqscript` by name costs about 2 ms a call (measured), so resolve modules at file scope but read shared handles fresh. A stateless module kept from an earlier load still does its work.
+- **Corrected in place (2026-10-02):** "about 2 ms a call" was measured on 2026-09-24. In region4 a lookup by name costs 6.5 to 7 ms: the cost follows how many script folders DFHack searches ahead of the script's own (FINDING A SCRIPT BY NAME, below). An environment found by name may be kept as long as no load intervenes: RM keeps one until the module registry is replaced, which every load and reload does.
 
 ## DFHack loads overlay scripts by itself
 
@@ -65,3 +66,34 @@
 - **What it cost:** a lookup by name (`dfhack.findScript`) walks DFHack's script folders in order. RM's script check made 12 lookups every 5 s: 86 ms a run, 110 at worst. With the kept copies refreshed, that came to about 15 ms/sec, plus 180 ms at a save request.
 - **Now:** each file is found by name once. After that only its known path is asked about, with one `dfhack.filesystem.mtime` call, which answers -1 when the file is gone and a new value when it changed. The check costs about 0.6 ms a call.
 - **When the paths are forgotten:** at each map load, since DFHack builds its script folders afresh for each world.
+- **The same cost elsewhere:**
+  - the module engine made 221 lookups by name in one region4 load, 1,428 ms, 6.5 ms each, until each script was found once a run (ONE LOOKUP PER SCRIPT A RUN, 2026-10-01);
+  - the save hook's options screen refresh made two at every opening, and its background build one every frame it ran: an opening cost 20.4 ms, 12.4 and 8.0 of it in the two parts that looked a script up. Found once a data cycle, an opening cost 4.0 ms (THE TWO SCRIPTS THE REFRESH CALLS, 2026-10-02).
+
+## world.items.all is in id order, so the items made since a mark are its tail
+
+- **Status:** code (DFHack finds an item by id with a binary search over `world.items.all`: df.item.xml, the item instance vector, keyed by id) and measured (2026-10-02: the coal watcher's and the tool tint's reads of new items check the order as they go, and neither warned in any session)
+- **How RM uses it:** keep the next item id at a mark (`df.global.item_next_id`, below), find the first position holding an id at least that large with one binary search, and read on to the end.
+- **Who reads new items this way:** the coal watcher (it catches traders', migrants' and invaders' goods, which the created event skips), the tinder watcher, the tool tint's new tools and the tool wash's record for the options screen.
+
+## df.global.item_next_id is the id the next item will get
+
+- **Status:** code (an archived probe, probe-corpsepiece.lua, numbers the items it creates from it) and measured (2026-10-02)
+- **What it buys:** one read splits every item in the world into made before and made after.
+- **Measured:** the binder watcher reads it at each poll to tell a job's output from the binders already in the workshop: the same yields as the walk of the workshop it replaced, at 0.02 ms a job instead of 0.82 (making-fuel/fuel.md).
+
+## print_timers measures unpaused time, and names a Lua loop only when the loop reports itself
+
+- **Status:** measured (2026-10-02, `:lua require('script-manager').print_timers()`), and code for the clock (Lua_API.txt: `dfhack.getTickCount()` returns the tick count in ms)
+- **Unpaused only:** the report says so. A loop's cost while the game is paused, an options screen or a save, is not in it.
+- **Names:** a loop on `dfhack.timeout` shows only in the timers' unnamed share (`framework`). A loop that calls `dfhack.internal.recordRepeatRuntime(name, start_ms)` after each run gets a row of its own. Once RM's dispatcher reported each subscriber as `d:<name>` and RM's own loops reported under their names, the unnamed share of Lua timer time fell from 75% to 11 to 14%.
+- **Resolution:** `start_ms` comes from `dfhack.getTickCount()`, in whole milliseconds, so a short loop's runs read 0 or 1 ms each and its total is right only on average.
+
+## A walk spread across ticks can pass an item over
+
+- **Status:** code (a vector's later items move down when one is removed) and measured in mocks (2026-10-02)
+- **What goes wrong:** a walk that reads a vector by position a slice at a time, across ticks, loses its place when an item below its position is removed: everything after it moves down one, and the next slice starts one item late.
+- **The two cures RM uses:**
+  - where the vector is in id order (`items.all`), walk by item id: each slice starts from a binary search for the next id (the tool wash's background build);
+  - elsewhere, check that the last item read is still where it was left, look for it within a few places either way when it is not, and go on after it. A pass that cannot find it marks itself unsure and drops nothing at its end (the tool tint's backstop, the window service's renewal pass).
+- **Measured in the mocks:** with an item removed every frame, every pass read each item present throughout exactly once. A block of 100 removed at once made the pass unsure, and it dropped nothing.

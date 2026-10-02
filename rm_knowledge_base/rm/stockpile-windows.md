@@ -20,7 +20,24 @@ These entries cover how the count is kept affordable in a big fort, and what eac
   - the item created hook adds each new twin item on the next tick (`absorb`);
   - a count reads the known items alone (`count_known`).
 - **The backstop:** a full walk runs at least every FULL_FRAMES (4000), and whenever the claims change (`claims_sig`).
+  - **Corrected in place (2026-10-02):** the periodic full walk is now the renewal pass (THE BACKSTOP IS A PASS, A SLICE A TICK, below). A full walk still runs whenever the claims change, and wherever a count must be fresh.
 - **The gap, measured rather than assumed:** the created event does not fire for traders, migrants or invaders, nor for the coal watcher's sweep turning an existing bar into a coal twin. The full walk logs any twin item the list lacked (`STOCKPILE_WINDOWS KNOWN`).
+
+## The backstop is a pass, a slice a tick
+
+- **Status:** code and measured (2026-10-02)
+- **Before:** the recount that came due every FULL_FRAMES walked every item of every claimed type in one tick: 46 to 48 ms, 56 at worst (8 calls in 342 s), and the open window's tick reached 51 to 56 ms.
+- **Now:** every count reads the known list while it is good for the claims, and the backstop is a pass of its own (THE RENEWAL, A SLICE A TICK).
+  - Each tick reads RENEW_SLICE (2,500): an item read costs 1, a twin placed 3 more. A pass takes about 17 to 20 ticks, and starts FULL_FRAMES after the last one began.
+  - Each item gets the full walk's own code (`walk_one`), and the pass's end the full walk's renewal (`renew_list`). Its bar materials join `new_bars` for the soap scan.
+- **What a pass changes, against the full walk:**
+  - its reads span about 500 frames, not one tick;
+  - a twin made without a created event is counted from the pass's end, a few hundred frames later;
+  - its pile list, with the piles, bin room and building roles, is made at its start and kept for the pass. Made each tick it would cost about 2 ms a tick and read a workshop's contents once a tick instead of once a pass. What it can get wrong is what any renewal's records get wrong until the next.
+- **Kept in step:** each tick finds the last item it read before going on (dfhack/scripts.md, a walk spread across ticks). An unsure pass keeps every listed item it did not find, with its records; items made during the pass are kept, listed by the created hook.
+- **Full walks stay** wherever a count must be fresh: the first count of a session, a claims change, closing on nothing loose, the STUCK diagnosis, the status command and the test. Each supersedes a pass under way.
+- **Measured in play:** slices of 3.05 to 3.38 ms, 7 to 8 at worst; the open window's tick at worst 14 to 29 ms. The backstop costs about 1.4 ms/sec against about 1.1 for the full walk: the price of spreading it.
+- **Measured in a mock, old against new** (33,600 items, 17,000 frames): the same known list at the end, the same counts once each renewal had landed, and most reads in one tick 4,047 instead of 33,496.
 
 ## Stored twins are skipped until the next full walk
 
@@ -33,6 +50,7 @@ These entries cover how the count is kept affordable in a big fort, and what eac
   - held by another building.
 - **Renewal:** detail counts (the census, a STUCK diagnosis) read every item and renew the record. Every full walk builds it afresh.
 - **The gap:** a stored twin made loose again with no new item is unseen until the next full walk or detail count. That happens when a pile's settings change or a bin is emptied. A window never closes on it, because closing on nothing loose takes a fresh full walk first.
+  - **Corrected in place (2026-10-02):** read "the next renewal pass" for "the next full walk"; the closing walk is unchanged.
 - **Measured in region4 (818 s):** the recount came to 16.9 ms, not the few ms estimated. The census held 1,509 twins in workshops (3,333 in containers, 21 on piles), and a twin in a workshop is loose, so all of them were still read.
 
 ## A twin in a workshop whose flags word has not changed is still there
@@ -45,6 +63,7 @@ These entries cover how the count is kept affordable in a big fort, and what eac
   - forbidding, dumping or destroying it marks it.
 - **What still runs:** the find and the material read stay, so an item that is gone, or no longer a twin, still leaves the list.
 - **The gap (inferred):** a twin moved from a workshop into another building with its flags word unchanged, by a script or by a haul no count saw in progress. It stays counted until the next full walk, which counts such twins and logs them (`KNOWN`, "kept as in a workshop, flags unchanged, were elsewhere").
+  - **Corrected in place (2026-10-02):** the next renewal pass now does that, and logs it as a `backstop pass` line.
 - **Measured (443.7 s, the same save as the 818 s run):**
   - the known count took 11.4 ms a call, against 15.3 at the same point of the 818 s run;
   - the window service took 6.76 ms/sec, against 7.77;
@@ -64,7 +83,7 @@ These entries cover how the count is kept affordable in a big fort, and what eac
 - **Status:** code and measured (2026-10-01)
 - **A PILE'S BOUNDS, READ ONCE PER LIST:** a pile's z and corners are read once and kept as numbers, and an item's position once per test. Before: 4.5 ms of a 14.4 ms count.
 - **THE ROOM, SUMMED ONLY FOR PILES ASKED ABOUT:** bins are only placed on their piles at setup, and a pile's free bin volume is summed the first time an item on it asks. Before: 7.6 ms with 19 twins on piles.
-- **Now:** a pile list lives for one count or one tick, and its setup costs 1.9 ms a count.
+- **Now:** a pile list lives for one count or one tick, and its setup costs 1.9 ms a count. The exception, since 2026-10-02, is the renewal pass's, kept for its pass (above).
 
 ## A window's opening
 

@@ -62,3 +62,24 @@
   - The window's known count was run this way through hauls, drops, a removed workshop, binned coal and a census.
   - A known gap is reproduced on purpose, to show where the two differ and when they agree again.
 - **DFHack's errors modelled:** a mock item whose metatable raises on a missing field, as DFHack does (dfhack/scripts.md), counts the throws a change removes.
+
+## Name before you probe
+
+- **Adopted 2026-10-02:** DFHack's own timers (`print_timers`) showed three quarters of the Lua timer time as unnamed until RM's loops reported themselves (dfhack/scripts.md). Named, they showed two loops no probe had laps in, the binder watcher and the tool tint, among RM's five costliest.
+- **The rule:** a loop that runs on its own timer reports its runtime under its name, so the first look at a session's cost needs no new probe.
+
+## An engine fact a change rests on is probed before the change
+
+- **Example, 2026-10-02:** gating the save hook's focus check on `options.open` was safe only if `open` is set whenever the options screen is up.
+  - First a probe counted, every frame, the frames the two disagreed in each direction, warning at once on the dangerous one and changing nothing.
+  - Four openings, one a save & continue, 2,145 frames up: no disagreement.
+  - Only then was the gate written, with a tripwire left in (df/saves.md).
+
+## A record is compared old against new by its content
+
+- **The tool wash, 2026-10-02:** the old full wash and the new kept record ran in one mock world, opening the options screen five times while tools were made, used up and dried. Each opening's stored record was decoded and hashed: identical at every opening, with and without a leftover record from before.
+- **A difference is classified, not waved through:** after a data cycle the two differed. Both were dumped and compared item by item: 17 entries, every one for an item gone, nothing missing, no tool different (rm/save-system.md).
+
+## A pass spread over ticks is checked for what it read
+
+- **The check:** in the mock, each item's reads are counted per pass against the items present throughout that pass. Missed must be 0 and read twice 0 with items removed every frame; a shift too large to follow must make the pass unsure, and an unsure pass must drop nothing (dfhack/scripts.md, a walk spread across ticks).
