@@ -104,3 +104,27 @@ What happens to RM's data around every save, as of 2026-10-02, and the steps tha
 - **Status:** code and measured (2026-10-01)
 - **What went wrong:** waiting only for the world to be gone was not enough. Prompts were drawn over DF's save screen during a save & quit, stacked and garbled.
 - **Now:** a prompt after a map unload waits for either the title screen with the world gone, or a fort with a map loaded again. After SETTLE_MAX_FRAMES it is shown regardless.
+
+## The ledger carries tools in saved jobs and work orders
+
+- **Status:** code, tested in a mock of the real remap (2026-10-04)
+- A job and a work order name a tool by number, and RM's and the modules' tools are numbered in injection order (df/jobs.md). Every write records each owned tool by name with its number (T lines). The record is in the fingerprint, so a change to the tools alone takes the full remap.
+- At load the jobs and work orders pass moves every tool number by name, the way it moves materials: an item slot, a job or order that makes a tool, an order's items and its item conditions. Only a number an owned tool held last session is touched; vanilla's never move. A tool no longer injected keeps its number, with a WARNING.
+- **Mock:** with glue injected ahead of gravel and Making Fuel's tools, a saved branch job moved 5 to 6, a job making a binder 6 to 7, and an order's gravel condition 4 to 5; a vanilla tool slot and a bar slot were untouched, and the next write recorded the new layout.
+- **Limit:** a ledger written before 2026-10-04 holds no tools, so jobs saved under it cannot be moved.
+
+## The ledger carries smelters' part bars
+
+- **Status:** code (2026-10-04)
+- A smelter's store is indexed by inorganic (df/melting.md), so a finish that moves between loads would leave its part bars under another metal. At every load the ledger first fits every furnace's store to the array, then moves each store's entries by name alongside every other object. Part bars of a finish no longer generated go to its base metal's entry, as its items do. The fitting runs even when nothing moved, since a store sized before finishes were minted ends short of them.
+- **Measured at load:** seven furnaces' stores were fitted to the 1,256-entry array (STORES DETAIL).
+
+## Pile settings follow their materials
+
+- **Status:** code and measured (2026-10-02 and 2026-10-03)
+- A stockpile keeps its choices in lists indexed by inorganic position (eleven lists, refinish-stockpile-windows.lua, INORG_LISTS), and DF restores them as saved (df/menus.md). A material whose position changed left its pile choices behind on whatever took its place, and nothing moved them until 2026-10-03.
+- The ledger's remap_piles moves them by name, as remap() moves objects: for every owned material in the previous layout that sits elsewhere now, its entry is read from the old position and written at the new one, in every list of every pile. A list longer than the array is then cut to the array's length, since past the end it holds only the previous layout's entries, and a finish minted later in play would land on one and take a choice no one made for it. An empty list stays empty.
+- All of a list's entries are read before any is written, because one material's new position can be another's old one, and each is written back as the type it was read as.
+- It runs after Steps 6.7 and 7, so the finishes a load mints from the fort's bars and dusts keep their choices too. A finish first minted later in play lies past the end of an old pile's lists, as it does for a pile made the same session.
+- **Measured:** the first version moved entries but cut nothing, and piles 29 and 30 kept bars lists 62,606 long with no finish in that day's array switched on (region4, 2026-10-03).
+- **The finish order itself** is kept by the roster (rm/finishes.md), so most loads move nothing.

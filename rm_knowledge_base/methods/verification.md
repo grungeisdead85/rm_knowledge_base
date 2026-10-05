@@ -83,3 +83,11 @@
 ## A pass spread over ticks is checked for what it read
 
 - **The check:** in the mock, each item's reads are counted per pass against the items present throughout that pass. Missed must be 0 and read twice 0 with items removed every frame; a shift too large to follow must make the pass unsure, and an unsure pass must drop nothing (dfhack/scripts.md, a walk spread across ticks).
+
+## A mock takes its names from the code that makes them
+
+- Seen 2026-10-04: the brick service watched for its grog reaction as REFINISH_BRICK_GROG, and its mock passed, because the mock was handed the same name. The module engine names every reaction it builds prefix, RXN_, key, so in play the reaction ran and the service never saw it. A name, code or key a mock feeds in is read from the code that produces it in play, never written from what the author expects it to be.
+
+## When a fix is in place and the thing still does not happen, read what DF built
+
+- Seen 2026-10-04: the mineral dye permits were confirmed in the civilisation's list by a console read, and the dyes were still in no menu (df/jobs.md). Reasoning from the reaction's fields ruled out the flags, the building, the category and the permit evaluator, and found nothing. The next step is a read of what DF itself built, here the menu's buttons (game.main_interface.building), set beside a case that works, rather than another theory.

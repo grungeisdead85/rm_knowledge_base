@@ -59,3 +59,15 @@
 - **Status:** code (2026-10-02)
 - Air-dry turns a wet tool into a dry one by rewriting an existing item's subtype. The options screen's kept tool record learns of such a change only from the list air-dry adds the item to (`_G.refinish_tool_wash_touched`; rm/save-system.md).
 - A Making Fuel script that ever changes which owned tool an existing item is must add the item to that list.
+
+## Fuel stacking: decided, then shelved
+
+- **Status:** decided (2026-10-04)
+- Every current fuel (kindling, tinder, dung, mash, straw) should stack, with dung piles sized by the animal that made them, and current functionality must stay whatever stacks. The rule for paying fuel from stacks: collect the stacks a job needs, burn them, count what was there and hand back the total less the cost, never cutting a stack back before the burn.
+- Shelved the same day as not worth it yet, after the fuel slot probe showed DF burns every stack a fuel slot holds (df/jobs.md). The four-slot bulk surcharge stands as it is.
+
+## Liquid glue is retired
+
+- **Status:** decided (2026-10-04)
+- Glue moved into RM core as a solid, in granules (rm/dust.md). Making Fuel's liquid glue, its two glue boils (from leather and from bone) and its four liquid glue briquette presses are gone; the tar boils stay. Briquettes no longer use glue.
+- **Upgrading a fort:** jobs queued for the retired boils outlive them. A saved job for a reaction that no longer exists is reported by the adaptive engine as a runtime clone with no alias (REACTION_ADAPTIVE ALIAS) until it is cancelled.
