@@ -79,3 +79,32 @@ RM's dust: how much one is, how it is paid, and where it goes besides finishing.
 
 - **Status:** decided (2026-10-04)
 - The flux hijack (reactions that take a flux boulder asking for flux dust instead) is set aside. Which reaction a job is consumed by, the job's slot or the reaction's own reagent, has not been measured.
+
+## Every bank lists every row it keeps, zero included
+
+- **Status:** decided (2026-10-05), code (refinish-job-byproducts.lua and refinish-reaction-outputs.lua, ALWAYS VISIBLE)
+- The byproduct bank lists every stream a building's jobs can bank, at zero until it banks. Which classes a building takes is fixed per workshop, held by DF's own enum names (BUILDING_CLASSES): carpenter wood; mason stone; metalsmith and magma forge metal; jeweler gem and glass; craftsdwarf stone, wood and bone; bowyer wood; mechanic stone; siege workshop wood; leatherworks leather; clothier and loom cloth; glass furnaces glass; smelters ore. Only a class some registered stream pays makes a row, and the byproduct switch is honoured.
+- The output bank lists each measured product a building makes, under the product's own name at zero, and one row per material once a material holds a remainder.
+- Glass worked at the jeweler (a rough or cut gem of a glass material) is glass work, so the jeweler banks cullet beside gem dust.
+- Making Fuel's banks follow the same law: straw at the mills and the farmer's workshop, mash at the still.
+
+## A balance shows only once it has paid since the readout landed
+
+- **Status:** measured symptom, inference on its cause (2026-10-05)
+- Metal dust and scrap rows appeared on every building, with no byproduct paid in either log. A balance with no unit saved beside it is no longer shown: pay began saving the unit when the readout landed, so a balance without one has not paid since.
+- **Inference:** building construction paid byproducts until 2026-10-05, leaving balances under buildings whose jobs can never fill them. The readout cannot tell what paid an old balance.
+
+## Dust rows carry their class
+
+- **Status:** decided (2026-10-06)
+- A dust row reads "stone dust", "metal dust", "bone dust"; scrap, cullet and gravel stand alone. Bare "dust" was tried on 2026-10-05 and dropped the next day: dust of several classes shares buildings, and a building's banks share one screen.
+
+## A measured product that always comes out whole lists no row
+
+- **Status:** decided (2026-10-06), code (refinish-reaction-outputs.lua, declared_set and measured_tools)
+- A product declared `whole = true` beside `measure = true` gets no zero row in the output bank. The mason's crush dust is a boulder less three gravel, 25 dust exactly, so it never banks, and a row that is always empty is not a bank. A remainder, if one were ever left, shows like any other.
+
+## The scale form is gone
+
+- **Status:** decided (2026-10-05)
+- SCALE was never injected (dropped at the catalog step, as the log showed) and nothing paid it. It is deleted from refinish-core-payload.lua, making-fuel-hijacker.lua and making-fuel-tuning.lua.

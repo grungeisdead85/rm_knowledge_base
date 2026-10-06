@@ -56,3 +56,10 @@ What DF does with a job's item slots and its fuel, how a job names the tools it 
 - A gold table and a wooden table both measure 3000: an item's volume is set by its type, not by what went into it. A metal table takes three bars, 1800, and a log is 5000.
 - **Evidence:** the melt line for a gold table, "holds 1800 of the 1800 it cost, volume 3000"; both tables read 3000 in play.
 - **Depends on it:** a melt credits the smaller of an item's cost and its volume (rm/melting.md).
+
+## A builtin coal reagent is held against a bar's dimension, and a red row names its last unmet reagent
+
+- **Status:** measured (2026-10-05, making-fuel-objection-probe, two runs at a smelter)
+- With Making Fuel's menu key at one bar (dimension 150) and 16 free module coal bars in the fort, every steelmaking row asking 300 or more read "Requires Refined coal", and the rows asking 150 did not. With the key's dimension set to 2400, the fort's free coal, those rows no longer named coal on the next press. A reagent's quantity is held against the bar's dimension, not counted in bars.
+- A red row names one reagent: the last one, in reagent order, that the fort cannot meet. With coal met, "make steel bars (5)" named "Cast iron bars".
+- **Depends on it:** making-fuel-access.lua sizes the menu key to the fort's free coal (making-fuel/fuel.md).

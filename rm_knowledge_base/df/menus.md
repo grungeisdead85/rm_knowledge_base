@@ -55,3 +55,16 @@ How DF builds the lists a player works through, measured while RM's finishes fil
 - **Status:** measured (2026-10-02)
 - A stockpile keeps its choices in lists indexed by inorganic position. On a save written before the finish roster, the piles' bars lists came back 62,606 long, the old layout's length, not the array's: DF restores them as saved, so a choice stays at its position whatever material is there now.
 - **Depends on it:** the ledger moves pile entries by name (rm/save-system.md).
+
+## A reagent's requirement line is its own fields, in the hover and on a red row
+
+- **Status:** measured (2026-10-05, making-fuel-reads-probe; in play through 2026-10-06)
+- A task row's requirement lines, in the hover and in a red row's objection alike, are written from each reagent's own fields, with DF's item word after them and the line's first letter capitalised. The hover gives a count ("4 fine coal bars"); the objection does not ("Requires BREEZE_COKE bars").
+  - A reagent gated by a reaction class prints the class string: "4 FINE_COAL bars", "BINDER binder".
+  - The container of a contained reagent prints that reagent's code: "Tar-containing item".
+  - A reagent gated by a material reaction product prints the product id: "SEED_MAT-producing" on a plant.
+  - A reagent flagged nearby is printed with "Nearby": "Requires Nearby dead citizen item".
+  - A reagent naming a material prints the material's name: "Sponge iron bars".
+- Changing a live reagent's class string or code changes both lines at once. A row stays white when the materials that should match carry the new class: the briquette press with "fine coal" and "clay or glue" read white with cinders and a binder in the fort, and its job ran.
+- DF writes a new objection only on a press: a folder closed and reopened shows the change.
+- **Depends on it:** reads, the words a reagent is printed as (rm/requirement-text.md).

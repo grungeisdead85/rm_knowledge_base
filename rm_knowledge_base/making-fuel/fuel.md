@@ -71,3 +71,19 @@
 - **Status:** decided (2026-10-04)
 - Glue moved into RM core as a solid, in granules (rm/dust.md). Making Fuel's liquid glue, its two glue boils (from leather and from bone) and its four liquid glue briquette presses are gone; the tar boils stay. Briquettes no longer use glue.
 - **Upgrading a fort:** jobs queued for the retired boils outlive them. A saved job for a reaction that no longer exists is reported by the adaptive engine as a runtime clone with no alias (REACTION_ADAPTIVE ALIAS) until it is cancelled.
+
+## The fuel menu key is kept for the life of the fort, and carries the fort's coal
+
+- **Status:** decided and measured (2026-10-05)
+- The key is no longer destroyed at stop and minted at start, onto open ground, with a haul every time. Stop locks it (forbidden, which DF counts as unavailable), start adopts the kept key before the coal watcher's opening sweep, and a key is minted only when none exists. Haulers bin it, which is harmless.
+- Its dimension is the fort's free smith-class coal at 150 a bar: at least one bar, at most the largest coal plus fuel any loaded reaction asks (900 across 23 reactions in play), resized at each honest scan. At one bar, every row asking more read "Requires Refined coal" in a fort full of coal (df/jobs.md). Passed in play.
+
+## A dead citizen is asked isOwnGroup
+
+- **Status:** measured and code (2026-10-06, making-fuel-cremate-watcher.lua, A DEAD CITIZEN)
+- isCitizen is false on the dead (dfhack/scripts.md), so an exterminated citizen's corpse lay on the pyre and was never keyed. A dead unit is now a citizen when it is in the fort's group and carries none of the flags isCitizen itself refuses (marauder, invader origin, active invader, forest, merchant, diplomat, visitor, uninvited visitor, underworld, resident), nor tame. A flag name this DF lacks is dropped at load. Cremating a citizen and a pet worked in play.
+
+## The retort is built from any building material
+
+- **Status:** decided and code (2026-10-05)
+- Its first build item is type NONE with `flags2.building_material`, the way DF's own buildings ask; the injector resolves a build item's type through df.item_type, where NONE is -1. preflight.py accepts NONE for build items.

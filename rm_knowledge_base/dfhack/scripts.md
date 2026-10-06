@@ -97,3 +97,11 @@
   - where the vector is in id order (`items.all`), walk by item id: each slice starts from a binary search for the next id (the tool wash's background build);
   - elsewhere, check that the last item read is still where it was left, look for it within a few places either way when it is not, and go on after it. A pass that cannot find it marks itself unsure and drops nothing at its end (the tool tint's backstop, the window service's renewal pass).
 - **Measured in the mocks:** with an item removed every frame, every pass read each item present throughout exactly once. A block of 100 removed at once made the pass unsure, and it dropped nothing.
+
+## isCitizen is false on a dead citizen; isOwnGroup is not
+
+- **Status:** measured (2026-10-06, making-fuel-cremate-probe)
+- On a citizen killed with exterminate: `isDead` true, `isCitizen(u, true)` false, `isCitizen(u)` false, `isOwnGroup` true, `isOwnCiv` true, `isFortControlled` true, `isPet` false. The API describes isCitizen as "a non-dead sane citizen".
+- Neither of the other two names a dead citizen alone: isOwnCiv also holds for a merchant of the fort's own civ, and isFortControlled holds for tame animals.
+- **Corrected:** making-fuel-cremate-watcher.lua had recorded `isCitizen(unit, true)` as answering true on a corpse. That fell 2026-10-06; whether it held under another DFHack, or for another kind of death, is not known.
+- **Depends on it:** the cremation watcher asks a dead unit its own questions (making-fuel/fuel.md).
