@@ -1,9 +1,4 @@
-- **Profiler:** the old butchery sweep cost 3 to 4 ms a second, a closure per
-  item across 15,000 items, until it asked item type first. The stacked-skin
-  watcher kept that sweep at first and reached 5 to 10 ms a second, top of the
-  profiler, so on 2026-09-26 it moved to the item created event with a tail
-  backstop and a look over its own stacks. The sprite trace cost 2.6 ms a
-  second.# RM Hide Wing Lessons
+# RM Hide Wing Lessons
 
 What Making Fuel's glob hide wing learned, kept after the wing itself was
 retired.
