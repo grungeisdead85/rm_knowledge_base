@@ -1,0 +1,78 @@
+autodump
+========
+
+Tags: fort | armok | fps | items
+
+Command: "autodump"
+
+  Instantly gather or destroy items marked for dumping.
+
+Command: "autodump-destroy-here"
+
+  Destroy items marked for dumping under the keyboard cursor.
+
+Command: "autodump-destroy-item"
+
+  Destroy the selected item.
+
+Keybinding: [Ctrl][K] in "dwarfmode"
+
+This tool can instantly move all unforbidden items marked for dumping to the tile under the keyboard cursor. After moving the items, the dump flag is unset and the forbid flag is set, just as if it had been dumped normally. See gui/autodump for an interactive version of this tool.
+
+The keyboard cursor can be placed on a floor tile or in the air. If in air, the items will be converted into projectiles and fall. Items cannot be dumped inside of walls.
+
+
+Usage
+-----
+
+   autodump [<options>]
+   autodump-destroy-here
+   autodump-destroy-item
+
+"autodump-destroy-here" is an alias for "autodump destroy-here" and is intended for use as a keybinding.
+
+"autodump-destroy-item" marks the currently viewed item for destruction. The pending destruction can be canceled if the command is run again before unpausing, or by running "autodump undestroy".
+
+
+Options
+-------
+
+"destroy"
+   Destroy instead of dumping. Doesn't require a cursor. Items held by units (e.g. equipped or in a carried container) are skipped, and the contents of destroyed containers are destroyed along with the container.
+
+"destroy-here"
+   Destroy items under the cursor that are marked for dumping.
+
+"undestroy"
+   Revert pending destruction of items marked by "destroy", "destroy-here", or "autodump-destroy-item". Only works while the game is still paused; once a frame passes, the items may already be gone.
+
+"visible"
+   Only process items that are not hidden.
+
+"hidden"
+   Only process hidden items.
+
+"forbidden"
+   Only process forbidden items (default: only unforbidden).
+
+
+Examples
+--------
+
+"autodump"
+   Teleports unforbidden items marked for dumping to the cursor position.
+
+"autodump destroy"
+   Destroys all unforbidden items marked for dumping.
+
+"autodump destroy forbidden"
+   Destroys all forbidden items marked for dumping, skipping unforbidden items.
+
+"autodump-destroy-here"
+   Destroys unforbidden items on the selected tile that are marked for dumping.
+
+"autodump-destroy-item"
+   Destroys the item currently being viewed, or reverts its pending destruction.
+
+"autodump undestroy"
+   Reverts pending destruction of all marked items.
