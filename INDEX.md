@@ -9,9 +9,11 @@
 > A copy of this index also lives in the Refinish Metal project, where it is
 > readable without cloning. It is written by hand: `build_indexes.py`, in this
 > repo's `repo_index_generators/`, checks it for any file it does not name, so
-> name every file by its full path from the repo root, in backticks.
+> name every file by its full path from the repo root, in backticks. The one
+> exception is `dfhack_docs/`, too big to list by hand: the generator writes its
+> index, `dfhack_docs_INDEX.md`, and this one names that file instead.
 
-What Refinish Metal's development has established about Dwarf Fortress, DFHack and RM itself, with the evidence for each claim, and RM's development notes. The companion repos hold raw material (structure dumps, vanilla raws, archived probes); this one holds conclusions. It also holds the index generators for every repo and `REFERENCE_REPOS.md`, the overview of all of them.
+What Refinish Metal's development has established about Dwarf Fortress, DFHack and RM itself, with the evidence for each claim, RM's development notes, and DFHack's own documentation. The companion repos hold raw material (structure dumps, vanilla raws, archived probes); this one holds conclusions, plus the DFHack manual they are checked against. It also holds the index generators for every repo and `REFERENCE_REPOS.md`, the overview of all of them.
 
 ## How entries are written
 
@@ -84,6 +86,12 @@ RM's development notes, kept here rather than in the project because of their si
 |---|---|
 | `RM_Notes/Making_Concrete_Reference/making-concrete-2.md` | The Making Concrete 2.0 delivery record, kept as written: what it is, the comment audit, checks after the recycle, the diffs of `making_concrete.lua` and the mix watcher. Its figures predate 2026-10-07; its opening note records the recipes after that change |
 
+## DFHack documentation
+
+`dfhack_docs/` is DFHack's own manual as DFHack ships it in Dwarf Fortress's `hack/docs/` folder: every page rendered as plain text, from the Lua API reference and the guides to the changelogs and one page per tool. Its index, `dfhack_docs_INDEX.md`, is generated: it names the DFHack version, lists every page and tool, gives the full outline of the pages RM reads most with the line each section starts on, and shows where each DFHack name RM uses is documented.
+
+The manual is DFHack's account of DFHack. It says where to look, not how DF or DFHack behaves: the code and what is measured in game decide that.
+
 ## Sources
 
-Knowledge base entries were established in the Refinish Metal sessions of 2026-09-29 to 2026-10-06 unless an entry says otherwise. The development notes date themselves. Session transcripts, logs and probe scripts are the underlying record.
+Knowledge base entries were established in the Refinish Metal sessions of 2026-09-29 to 2026-10-06 unless an entry says otherwise. The development notes date themselves. Session transcripts, logs and probe scripts are the underlying record. `dfhack_docs/` is DFHack's text, under the licenses in `dfhack_docs/LICENSE.txt`.
